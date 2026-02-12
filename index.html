@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Patton Shower | Baby Iyla</title>
+  <meta name="description" content="A flip-through newspaper-style baby announcement." />
+  <link rel="preload" as="image" href="assets/pages/page-1.jpg" />
+  <link rel="preload" as="image" href="assets/pages/page-2.jpg" />
+  <link rel="preload" as="image" href="assets/pages/page-3.jpg" />
+  <link rel="preload" as="image" href="assets/pages/page-4.jpg" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="wrap">
+    <header class="topbar" aria-label="Header">
+      <div class="brand">
+        <div class="brand__kicker">Special Edition</div>
+        <div class="brand__title">Patton Shower</div>
+      </div>
+
+      <div class="hints" aria-label="Navigation hints">
+        <button id="helpBtn" class="helpBtn" type="button" aria-label="Help">?</button>
+        <div id="helpPop" class="helpPop" role="dialog" aria-label="Help" hidden>
+          <div class="helpPop__section">
+            <div class="helpPop__label">Pages</div>
+            <div class="helpPop__item">Swipe or drag to turn</div>
+            <div class="helpPop__item">Tap left or right edge</div>
+          </div>
+
+          <div class="helpPop__section">
+            <div class="helpPop__label">Zoom view</div>
+            <div class="helpPop__item">Open: double-click or center double-tap</div>
+            <div class="helpPop__item">Close: outside, ✕, or <kbd>Esc</kbd></div>
+            <div class="helpPop__item">Toggle zoom: double-click or <kbd>Z</kbd></div>
+          </div>
+
+          <details class="helpPop__details">
+            <summary class="helpPop__summary">Keyboard shortcuts</summary>
+            <div class="helpPop__keys">
+              <div class="helpPop__keyRow">
+                <span class="helpPop__keyLabel">Viewer</span>
+                <span class="helpPop__keyCaps">
+                  <kbd>←</kbd><kbd>→</kbd><kbd>PgUp</kbd><kbd>PgDn</kbd><kbd>Space</kbd><kbd>Home</kbd><kbd>End</kbd>
+                </span>
+              </div>
+              <div class="helpPop__keyRow">
+                <span class="helpPop__keyLabel">Lightbox</span>
+                <span class="helpPop__keyCaps">
+                  <kbd>Esc</kbd><kbd>Z</kbd><span class="helpPop__keyHint">+ viewer keys</span>
+                </span>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </header>
+
+    <section class="stage" aria-label="Flipbook">
+      <div class="flipbook-shell">
+        <div
+          id="flipbook"
+          class="flipbook"
+          role="group"
+          aria-roledescription="page viewer"
+          aria-label="Newspaper pages"
+        >
+          <div id="base" class="page-layer base" aria-hidden="true"></div>
+
+          <div id="sheet" class="sheet" aria-hidden="true">
+            <div id="front" class="page-layer face front"></div>
+            <div id="back" class="page-layer face back"></div>
+          </div>
+
+          <button id="tapPrev" class="tapzone tapzone--left" type="button" aria-label="Previous page"></button>
+          <button id="tapNext" class="tapzone tapzone--right" type="button" aria-label="Next page"></button>
+        </div>
+      </div>
+
+      <nav class="controls" aria-label="Controls">
+        <button id="prevBtn" class="btn" type="button">
+          <span class="btn__icon" aria-hidden="true">◀</span>
+          <span class="btn__text">Previous</span>
+        </button>
+
+        <div class="status" aria-live="polite">
+          <div id="indicator" class="status__text">Page 1 of 4</div>
+          <div class="dots" aria-label="Page dots" role="tablist">
+            <button class="dot" type="button" data-page="0" role="tab" aria-label="Go to page 1"></button>
+            <button class="dot" type="button" data-page="1" role="tab" aria-label="Go to page 2"></button>
+            <button class="dot" type="button" data-page="2" role="tab" aria-label="Go to page 3"></button>
+            <button class="dot" type="button" data-page="3" role="tab" aria-label="Go to page 4"></button>
+          </div>
+        </div>
+
+        <button id="nextBtn" class="btn" type="button">
+          <span class="btn__text">Next</span>
+          <span class="btn__icon" aria-hidden="true">▶</span>
+        </button>
+      </nav>
+
+      <footer class="footer" aria-label="Footer">
+        Tip: On mobile, swipe left for next page and swipe right for previous page.
+      </footer>
+    </section>
+  </main>
+
+
+  <!-- Lightbox: tap the center of a page (or double click) for a zoomable view -->
+  <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog" aria-label="Zoomed page view">
+    <div class="lightbox__backdrop" data-lb-close></div>
+
+    <div class="lightbox__panel" role="document">
+      <div class="lightbox__bar">
+        <div id="lightboxTitle" class="lightbox__title">Page</div>
+
+        <div class="lightbox__barRight">
+          <button id="lightboxPrev" class="lightbox__nav" type="button" aria-label="Previous page">◀</button>
+          <button id="lightboxNext" class="lightbox__nav" type="button" aria-label="Next page">▶</button>
+          <button id="lightboxClose" class="lightbox__close" type="button" aria-label="Close zoom view">✕</button>
+        </div>
+      </div>
+
+      <div id="lightboxScroller" class="lightbox__scroller">
+        <img id="lightboxImg" class="lightbox__img" alt="" draggable="false" />
+      </div>
+
+      <div class="lightbox__help">Pinch to zoom. Double tap to zoom. Swipe left or right for pages. Tap outside to close.</div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
