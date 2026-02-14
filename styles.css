@@ -44,6 +44,8 @@
 
 html, body {
   height: 100%;
+  overscroll-behavior-y: none;
+  overscroll-behavior: none;
 }
 
 body {
@@ -377,8 +379,8 @@ body::before {
   /* Deckle mask disabled by default for broad browser/file-mode reliability. */
   -webkit-mask-image: none;
   mask-image: none;
-  /* Allows swipe interactions but does not block pinch zoom on most browsers */
-  touch-action: manipulation;
+  /* We fully manage gestures for reliable iOS page turns */
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -553,6 +555,7 @@ body::before {
   z-index: 3;
   opacity: 0;
   transition: opacity 160ms ease, transform 160ms ease;
+  touch-action: none;
 }
 
 .tapzone--left { left: 0; }

@@ -23,6 +23,65 @@
 
   const flipbook = document.getElementById("flipbook");
   const shell = flipbook.closest(".flipbook-shell");
+  let scrollGuard = {
+    active: false,
+    startX: 0,
+    startY: 0,
+    locked: false,
+    lockAxis: null, // "x" | "y" | null
+  };
+
+  const TG_THRESHOLD = 6;      // px
+  const TG_AXIS_RATIO = 1.15;  // lock when one axis is clearly dominant
+
+  function onTouchStartGuard(e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    scrollGuard.active = true;
+    scrollGuard.locked = false;
+    scrollGuard.lockAxis = null;
+    scrollGuard.startX = e.touches[0].clientX;
+    scrollGuard.startY = e.touches[0].clientY;
+  }
+
+  function onTouchMoveGuard(e) {
+    if (!scrollGuard.active) return;
+    if (!e.touches || e.touches.length !== 1) return;
+
+    const x = e.touches[0].clientX;
+    const y = e.touches[0].clientY;
+    const dx = x - scrollGuard.startX;
+    const dy = y - scrollGuard.startY;
+
+    const adx = Math.abs(dx);
+    const ady = Math.abs(dy);
+
+    // Decide axis once user has moved enough
+    if (!scrollGuard.locked && (adx + ady) > TG_THRESHOLD) {
+      if (adx > ady * TG_AXIS_RATIO) {
+        scrollGuard.locked = true;
+        scrollGuard.lockAxis = "x";
+      } else if (ady > adx * TG_AXIS_RATIO) {
+        scrollGuard.locked = true;
+        scrollGuard.lockAxis = "y";
+      } else {
+        // ambiguous: prefer horizontal lock to prevent pull-to-refresh during page turns
+        scrollGuard.locked = true;
+        scrollGuard.lockAxis = "x";
+      }
+    }
+
+    // If the user is dragging the page (drag.active from existing code) OR we locked to horizontal,
+    // preventDefault to stop Safari scroll / pull-to-refresh.
+    if ((typeof drag !== "undefined" && drag.active) || scrollGuard.lockAxis === "x") {
+      e.preventDefault();
+    }
+  }
+
+  function onTouchEndGuard() {
+    scrollGuard.active = false;
+    scrollGuard.locked = false;
+    scrollGuard.lockAxis = null;
+  }
   // Match the flipbook aspect ratio to the real page images (prevents subtle cropping/letterboxing).
   const probe = new Image();
   probe.onload = () => {
@@ -462,6 +521,9 @@
     drag.lastX = e.clientX;
     drag.direction = null;
     drag.progress = 0;
+    scrollGuard.active = true;
+    scrollGuard.locked = true;
+    scrollGuard.lockAxis = "x";
 
     clearEdgeHints();
     flipbook.setPointerCapture?.(e.pointerId);
@@ -528,6 +590,7 @@
   const onPointerUp = (e) => {
     if (!drag.active) return;
     if (drag.pointerId !== e.pointerId) return;
+    onTouchEndGuard();
 
     flipbook.releasePointerCapture?.(e.pointerId);
     flipbook.classList.remove("is-dragging");
@@ -664,6 +727,10 @@
   flipbook.addEventListener("pointermove", onPointerMove);
   flipbook.addEventListener("pointerup", onPointerUp);
   flipbook.addEventListener("pointercancel", onPointerUp);
+  flipbook.addEventListener("touchstart", onTouchStartGuard, { passive: true });
+  flipbook.addEventListener("touchmove", onTouchMoveGuard, { passive: false });
+  flipbook.addEventListener("touchend", onTouchEndGuard, { passive: true });
+  flipbook.addEventListener("touchcancel", onTouchEndGuard, { passive: true });
   flipbook.addEventListener("pointerleave", () => {
     if (!drag.active) clearEdgeHints();
   });
